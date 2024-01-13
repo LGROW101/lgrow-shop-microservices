@@ -1,9 +1,13 @@
 package server
 
 import (
+	"log"
+
 	"github.com/LGROW101/LGROW-Microservices/modules/player/playerHandler"
+	playerPb "github.com/LGROW101/LGROW-Microservices/modules/player/playerPb"
 	"github.com/LGROW101/LGROW-Microservices/modules/player/playerRepository"
 	"github.com/LGROW101/LGROW-Microservices/modules/player/playerUsecase"
+	"github.com/LGROW101/LGROW-Microservices/pkg/grpccon"
 )
 
 func (s *server) playerService() {
@@ -12,6 +16,15 @@ func (s *server) playerService() {
 	httpHandler := playerHandler.NewPlayerHttpHandler(s.cfg, usecase)
 	grpcHandler := playerHandler.NewPlayerGrpcHandler(usecase)
 	queueHandler := playerHandler.NewPlayerQueueHandler(s.cfg, grpcHandler)
+
+	// gRPC
+	go func() {
+		grpcServer, lis := grpccon.NewGrpcServer(&s.cfg.Jwt, s.cfg.Grpc.PlayerUsl)
+		playerPb.RegisterPlayerGrpcServiceServer(grpcServer, grpcHandler)
+
+		log.Printf("Player gRPC server listening on %s", s.cfg.Grpc.PlayerUsl)
+		grpcServer.Serve(lis)
+	}()
 
 	_ = httpHandler
 	_ = grpcHandler

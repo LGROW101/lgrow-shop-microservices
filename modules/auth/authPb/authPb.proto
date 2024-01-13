@@ -7,11 +7,11 @@ option go_package = "github.com/LGROW101/LGROW-Microservices";
 
 // Structures
 
-message CredentialReq {
+message AccessTokenSearchReq {
     string accessToken = 1;
 }
 
-message CredentialRes {
+message AccessTokenSearchRes{
     bool isValid = 1 ;
 }
 
@@ -24,6 +24,6 @@ message RolesCountRes {
 // Methods 
 
 service AuthGrpcService {
-    rpc CredentialSearch(CredentialReq) returns ( CredentialRes);
+    rpc AccessTokenSearch(AccessTokenSearchReq) returns (AccessTokenSearchRes);
     rpc RolesCount(RolesCountReq) returns (RolesCountRes);
 }

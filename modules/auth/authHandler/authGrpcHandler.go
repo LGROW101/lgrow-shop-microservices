@@ -1,6 +1,8 @@
 package authHandler
 
 import (
+	"context"
+
 	authPb "github.com/LGROW101/LGROW-Microservices/modules/auth/authPb"
 	"github.com/LGROW101/LGROW-Microservices/modules/auth/authUsecase"
 )
@@ -17,4 +19,11 @@ func NewAutGrpchHandler(authUsecase authUsecase.AuthUsecaseService) *authGrpcHan
 		authUsecase: authUsecase,
 	}
 
+}
+func (g *authGrpcHandler) AccessTokenSearch(ctx context.Context, req *authPb.AccessTokenSearchReq) (*authPb.AccessTokenSearchRes, error) {
+	return nil, nil
+}
+
+func (g *authGrpcHandler) RolesCount(ctx context.Context, req *authPb.RolesCountReq) (*authPb.RolesCountRes, error) {
+	return nil, nil
 }
