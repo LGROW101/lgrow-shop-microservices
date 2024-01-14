@@ -3,11 +3,11 @@ package item
 import "github.com/LGROW101/LGROW-Microservices/modules/models"
 
 type (
-	CreateItem struct {
-		Title    string `json:"title" validate:"required,max-64"`
-		Price    string `json:"price" validate:"required"`
-		Damage   int    `json:"damage" validate:"required"`
-		ImageUrl string `json:"image_url" validate:"image_url"`
+	CreateItemReq struct {
+		Title    string  `json:"title" validate:"required,max=64"`
+		Price    float64 `json:"price" validate:"required"`
+		Damage   int     `json:"damage" validate:"required"`
+		ImageUrl string  `json:"image_url" validate:"required,max=255"`
 	}
 
 	ItemShowCase struct {
@@ -17,17 +17,20 @@ type (
 		Damage   int     `json:"damage"`
 		ImageUrl string  `json:"image_url"`
 	}
+
 	ItemSearchReq struct {
-		Title string `json:"title"`
+		Title string `query:"title" validate:"max=64"`
 		models.PaginateReq
 	}
+
 	ItemUpdateReq struct {
 		Title    string  `json:"title" validate:"required,max=64"`
 		Price    float64 `json:"price" validate:"required"`
 		ImageUrl string  `json:"image_url" validate:"required,max=255"`
 		Damage   int     `json:"damage" validate:"required"`
 	}
+
 	EnableOrDisableItemReq struct {
-		UsageStatus bool `json:"_usege_status"`
+		UsageStatus bool `json:"usage_status"`
 	}
 )
