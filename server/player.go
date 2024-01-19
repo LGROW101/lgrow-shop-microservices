@@ -15,7 +15,7 @@ func (s *server) playerService() {
 	usecase := playerUsecase.NewPlayerUsecase(repo)
 	httpHandler := playerHandler.NewPlayerHttpHandler(s.cfg, usecase)
 	grpcHandler := playerHandler.NewPlayerGrpcHandler(usecase)
-	queueHandler := playerHandler.NewPlayerQueueHandler(s.cfg, grpcHandler)
+	queueHandler := playerHandler.NewPlayerQueueHandler(s.cfg, usecase)
 
 	// gRPC
 	go func() {
@@ -26,7 +26,6 @@ func (s *server) playerService() {
 		grpcServer.Serve(lis)
 	}()
 
-	_ = httpHandler
 	_ = grpcHandler
 	_ = queueHandler
 
@@ -34,4 +33,9 @@ func (s *server) playerService() {
 
 	// Health Check
 	player.GET("", s.healthCheckService)
+
+	player.POST("/player/register", httpHandler.CreatePlayer)
+	player.GET("/player/:player_id", httpHandler.FindOnePlayerProfile)
+	player.POST("/player/add-money", httpHandler.AddPlayerMoney)
+
 }
