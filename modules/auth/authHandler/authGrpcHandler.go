@@ -14,12 +14,12 @@ type (
 	}
 )
 
-func NewAutGrpchHandler(authUsecase authUsecase.AuthUsecaseService) *authGrpcHandler {
+func NewAuthGrpcHandler(authUsecase authUsecase.AuthUsecaseService) *authGrpcHandler {
 	return &authGrpcHandler{
 		authUsecase: authUsecase,
 	}
-
 }
+
 func (g *authGrpcHandler) AccessTokenSearch(ctx context.Context, req *authPb.AccessTokenSearchReq) (*authPb.AccessTokenSearchRes, error) {
 	return nil, nil
 }

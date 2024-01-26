@@ -25,9 +25,9 @@ func AuthMigrate(pctx context.Context, cfg *config.Config) {
 
 	// auth
 	indexs, _ := col.Indexes().CreateMany(pctx, []mongo.IndexModel{
-		{Keys: bson.D{{"_id", 1}}},
-		{Keys: bson.D{{"player_id", 1}}},
-		{Keys: bson.D{{"refresh_token", 1}}},
+		{Keys: bson.D{{Key: "_id", Value: 1}}},
+		{Keys: bson.D{{Key: "player_id", Value: 1}}},
+		{Keys: bson.D{{Key: "refresh_token", Value: 1}}},
 	})
 	for _, index := range indexs {
 		log.Printf("Index: %s", index)
@@ -37,8 +37,8 @@ func AuthMigrate(pctx context.Context, cfg *config.Config) {
 	col = db.Collection("roles")
 
 	indexs, _ = col.Indexes().CreateMany(pctx, []mongo.IndexModel{
-		{Keys: bson.D{{"_id", 1}}},
-		{Keys: bson.D{{"code", 1}}},
+		{Keys: bson.D{{Key: "_id", Value: 1}}},
+		{Keys: bson.D{{Key: "code", Value: 1}}},
 	})
 	for _, index := range indexs {
 		log.Printf("Index: %s", index)

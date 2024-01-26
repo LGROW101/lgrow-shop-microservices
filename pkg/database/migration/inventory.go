@@ -21,7 +21,7 @@ func InventoryMigrate(pctx context.Context, cfg *config.Config) {
 	col := db.Collection("players_inventory")
 
 	indexs, _ := col.Indexes().CreateMany(pctx, []mongo.IndexModel{
-		{Keys: bson.D{{"player_id", 1}, {"item_id", 1}}},
+		{Keys: bson.D{{Key: "player_id", Value: 1}, {Key: "item_id", Value: 1}}},
 	})
 	for _, index := range indexs {
 		log.Printf("Index: %s", index)
