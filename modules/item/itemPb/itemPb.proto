@@ -7,7 +7,7 @@ option go_package = "github.com/LGROW101/LGROW-Microservices";
 
 // Structures
 message FindItemsInIdsReq {
-    repeated int32 ids = 1;
+    repeated string ids = 1;
 }
 
 message FindItemsInIdsRes {
@@ -15,14 +15,14 @@ message FindItemsInIdsRes {
 }
 
 message Item {
-    string id  = 1;
+    string id = 1;
     string title = 2;
     double price = 3;
     string imageUrl = 4;
     int32 damage = 5;
 }
 
-// Methods 
+// Methods
 service ItemGrpcService {
-    rpc FindItemsInIds(FindItemsInIdsReq) returns (FindItemsInIdsRes); 
+    rpc FindItemsInIds(FindItemsInIdsReq) returns (FindItemsInIdsRes);
 }
