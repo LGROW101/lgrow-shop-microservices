@@ -13,6 +13,7 @@ import (
 	"github.com/LGROW101/LGROW-Microservices/modules/middleware/middlewareHandler"
 	"github.com/LGROW101/LGROW-Microservices/modules/middleware/middlewareRepository"
 	"github.com/LGROW101/LGROW-Microservices/modules/middleware/middlewareUsecase"
+	"github.com/LGROW101/LGROW-Microservices/pkg/jwtauth"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,10 +33,12 @@ func newMiddleware(cfg *config.Config) middlewareHandler.MiddlewareHandlerServic
 	usecase := middlewareUsecase.NewMiddlewareUsecase(repo)
 	return middlewareHandler.NewMiddlewareHandler(cfg, usecase)
 }
+
 func (s *server) gracefulShutdown(pctx context.Context, quit <-chan os.Signal) {
-	log.Printf("Start down server: %s", s.cfg.App.Name)
+	log.Printf("Start service: %s", s.cfg.App.Name)
+
 	<-quit
-	log.Printf("Shutting down server: %s", s.cfg.App.Name)
+	log.Printf("Shutting down service: %s", s.cfg.App.Name)
 
 	ctx, cancel := context.WithTimeout(pctx, 10*time.Second)
 	defer cancel()
@@ -44,11 +47,13 @@ func (s *server) gracefulShutdown(pctx context.Context, quit <-chan os.Signal) {
 		log.Fatalf("Error: %v", err)
 	}
 }
+
 func (s *server) httpListening() {
-	if err := s.app.Start(s.cfg.App.Url); err != nil && err != http.ErrBodyReadAfterClose {
+	if err := s.app.Start(s.cfg.App.Url); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("Error: %v", err)
 	}
 }
+
 func Start(pctx context.Context, cfg *config.Config, db *mongo.Client) {
 	s := &server{
 		app:        echo.New(),
@@ -57,9 +62,10 @@ func Start(pctx context.Context, cfg *config.Config, db *mongo.Client) {
 		middleware: newMiddleware(cfg),
 	}
 
+	jwtauth.SetApiKey(cfg.Jwt.ApiSceretKey)
+
 	// Basic Middleware
 	// Request Timeout
-
 	s.app.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper:      middleware.DefaultSkipper,
 		ErrorMessage: "Error: Request Timeout",
@@ -72,6 +78,7 @@ func Start(pctx context.Context, cfg *config.Config, db *mongo.Client) {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.PATCH, echo.DELETE},
 	}))
+
 	// Body Limit
 	s.app.Use(middleware.BodyLimit("10M"))
 

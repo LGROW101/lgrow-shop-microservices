@@ -37,7 +37,7 @@ type (
 )
 
 func (a *authConcrete) SignToken() string {
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, a.Claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, a.Claims)
 	ss, _ := token.SignedString(a.Secret)
 	return ss
 }
@@ -74,6 +74,7 @@ func NewAccessToken(secret string, expiredAt int64, claims *Claims) AuthFactory 
 		},
 	}
 }
+
 func NewRefreshToken(secret string, expiredAt int64, claims *Claims) AuthFactory {
 	return &refreshToken{
 		authConcrete: &authConcrete{

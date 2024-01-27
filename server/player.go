@@ -17,17 +17,18 @@ func (s *server) playerService() {
 	grpcHandler := playerHandler.NewPlayerGrpcHandler(usecase)
 	queueHandler := playerHandler.NewPlayerQueueHandler(s.cfg, usecase)
 
+	go queueHandler.DockedPlayerMoney()
+	go queueHandler.RollbackPlayerTransaction()
+
 	// gRPC
 	go func() {
-		grpcServer, lis := grpccon.NewGrpcServer(&s.cfg.Jwt, s.cfg.Grpc.PlayerUsl)
+		grpcServer, lis := grpccon.NewGrpcServer(&s.cfg.Jwt, s.cfg.Grpc.PlayerUrl)
+
 		playerPb.RegisterPlayerGrpcServiceServer(grpcServer, grpcHandler)
 
-		log.Printf("Player gRPC server listening on %s", s.cfg.Grpc.PlayerUsl)
+		log.Printf("Player gRPC server listening on %s", s.cfg.Grpc.PlayerUrl)
 		grpcServer.Serve(lis)
 	}()
-
-	_ = grpcHandler
-	_ = queueHandler
 
 	player := s.app.Group("/player_v1")
 
@@ -35,8 +36,7 @@ func (s *server) playerService() {
 	player.GET("", s.healthCheckService)
 
 	player.POST("/player/register", httpHandler.CreatePlayer)
-	player.POST("/player/add-money", httpHandler.AddPlayerMoney)
+	player.POST("/player/add-money", httpHandler.AddPlayerMoney, s.middleware.JwtAuthorization)
 	player.GET("/player/:player_id", httpHandler.FindOnePlayerProfile)
-	player.GET("/player/account/:player_id", httpHandler.GetPlayerSavingAccount)
-
+	player.GET("/player/saving-account/my-account", httpHandler.GetPlayerSavingAccount, s.middleware.JwtAuthorization)
 }
